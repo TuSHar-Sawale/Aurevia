@@ -8,6 +8,8 @@ const USE_CLOUDINARY = !!(
   process.env.CLOUDINARY_API_KEY &&
   process.env.CLOUDINARY_API_SECRET
 );
+const isProduction = process.env.NODE_ENV === 'production';
+const ALLOW_LOCAL_UPLOADS_IN_PROD = process.env.ALLOW_LOCAL_UPLOADS === 'true';
 
 let cloudinaryStorage;
 
@@ -32,6 +34,11 @@ if (USE_CLOUDINARY) {
 
   console.log('☁️  Cloudinary storage enabled');
 } else {
+  if (isProduction && !ALLOW_LOCAL_UPLOADS_IN_PROD) {
+    throw new Error(
+      'Cloudinary is required in production. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET, or explicitly set ALLOW_LOCAL_UPLOADS=true for persistent disk hosts.'
+    );
+  }
   const dirs = ['products','categories','avatars','bulk'];
   dirs.forEach(d => {
     const full = path.join(__dirname, `../uploads/${d}`);

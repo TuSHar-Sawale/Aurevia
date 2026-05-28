@@ -8,6 +8,28 @@ const path       = require('path');
 const rateLimit  = require('express-rate-limit');
 
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
+const requiredEnv = ['MONGO_URI', 'JWT_SECRET'];
+const optionalButRecommendedEnv = [
+  'ALLOWED_ORIGINS',
+  'RAZORPAY_KEY_ID',
+  'RAZORPAY_KEY_SECRET',
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET',
+];
+
+if (isProduction) {
+  const missingRequired = requiredEnv.filter((key) => !process.env[key]);
+  if (missingRequired.length) {
+    throw new Error(`Missing required production environment variables: ${missingRequired.join(', ')}`);
+  }
+
+  const missingRecommended = optionalButRecommendedEnv.filter((key) => !process.env[key]);
+  if (missingRecommended.length) {
+    console.warn(`Production warning: missing optional environment variables: ${missingRecommended.join(', ')}`);
+  }
+}
 
 // Trust Railway/Render style reverse proxies so rate limiting and request IPs work correctly.
 app.set('trust proxy', 1);
@@ -46,7 +68,7 @@ const corsOptions = {
     const allowed = getAllowedOrigins();
     if (allowed.includes(origin)) return cb(null, true);
     // In development allow all origins
-    if (process.env.NODE_ENV !== 'production') return cb(null, true);
+    if (!isProduction) return cb(null, true);
     console.warn(`CORS blocked: ${origin}`);
     cb(new Error(`CORS policy: origin ${origin} not allowed`));
   },
@@ -107,6 +129,23 @@ app.use('/api/payment',  require('./routes/payment'));
 app.use('/api/reviews',  require('./routes/reviews'));
 app.use('/api/wishlist', require('./routes/wishlist'));
 app.get('/api/health',   (req, res) => res.json({ status: 'OK', time: new Date() }));
+app.get('/api/deployment-check', (req, res) => {
+  res.json({
+    success: true,
+    environment: process.env.NODE_ENV || 'development',
+    checks: {
+      mongoConfigured: !!process.env.MONGO_URI,
+      jwtConfigured: !!process.env.JWT_SECRET,
+      razorpayConfigured: !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
+      cloudinaryConfigured: !!(
+        process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET
+      ),
+      allowedOriginsConfigured: !!process.env.ALLOWED_ORIGINS,
+    },
+  });
+});
 
 // ─── One-time fix: update all absolute image URLs in DB to relative paths ──────────
 app.get('/api/admin/fix-image-urls', async (req, res) => {
