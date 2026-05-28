@@ -123,4 +123,45 @@ const couponSchema = new mongoose.Schema({
 
 const Coupon = mongoose.model('Coupon', couponSchema);
 
-module.exports = { Category, Order, Review, Cart, Coupon };
+// ─── Collection ───────────────────────────────────────────────────────────────
+const collectionSchema = new mongoose.Schema({
+  name:        { type: String, required: true, unique: true },
+  slug:        { type: String, unique: true },
+  description: String,
+  image:       String,
+  icon:        String,
+  isActive:    { type: Boolean, default: true },
+  sortOrder:   { type: Number, default: 0 },
+}, { timestamps: true });
+
+collectionSchema.pre('save', function(next) {
+  if (this.isModified('name')) {
+    this.slug = this.name.toLowerCase().replace(/\s+/g, '-');
+  }
+  next();
+});
+
+const Collection = mongoose.model('Collection', collectionSchema);
+
+// ─── Celebrity Pick ───────────────────────────────────────────────────────────
+const celebrityPickSchema = new mongoose.Schema({
+  name:        { type: String, required: true, unique: true },
+  slug:        { type: String, unique: true },
+  description: String,
+  image:       String,
+  icon:        String,
+  celebrity:   String,
+  isActive:    { type: Boolean, default: true },
+  sortOrder:   { type: Number, default: 0 },
+}, { timestamps: true });
+
+celebrityPickSchema.pre('save', function(next) {
+  if (this.isModified('name')) {
+    this.slug = this.name.toLowerCase().replace(/\s+/g, '-');
+  }
+  next();
+});
+
+const CelebrityPick = mongoose.model('CelebrityPick', celebrityPickSchema);
+
+module.exports = { Category, Order, Review, Cart, Coupon, Collection, CelebrityPick };

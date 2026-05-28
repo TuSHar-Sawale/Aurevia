@@ -2,10 +2,10 @@ const router = require('express').Router();
 const fs = require('fs');
 const { parse } = require('csv-parse/sync');
 const { protect, adminOnly } = require('../middleware/auth');
-const { uploadBulkCSV, uploadSingleImage } = require('../middleware/upload');
+const { uploadBulkCSV, uploadSingleImage, getFileUrl } = require('../middleware/upload');
 const Product = require('../models/Product');
 const User = require('../models/User');
-const { Category, Order, Coupon } = require('../models/index');
+const { Category, Order, Coupon, Collection, CelebrityPick } = require('../models/index');
 
 // All routes require admin
 router.use(protect, adminOnly);
@@ -133,22 +133,31 @@ router.get('/products', async (req, res) => {
     if (search) query.$text = { $search: search };
     if (category) query.category = category;
     const total = await Product.countDocuments(query);
-    const products = await Product.find(query).populate('category', 'name').sort('-createdAt').skip((page-1)*limit).limit(+limit);
+    const products = await Product.find(query)
+      .populate('category', 'name')
+      .populate('collection', 'name')
+      .populate('celebrityPick', 'name celebrity')
+      .sort('-createdAt')
+      .skip((page-1)*limit)
+      .limit(+limit);
     res.json({ success: true, products, total, pages: Math.ceil(total/limit) });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
 router.get('/products/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate('category', 'name');
+    const product = await Product.findById(req.params.id)
+      .populate('category', 'name')
+      .populate('collection', 'name')
+      .populate('celebrityPick', 'name celebrity');
     if (!product) return res.status(404).json({ success: false, message: 'Not found' });
     res.json({ success: true, product });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
 router.put('/products/:id', (req, res, next) => {
-  const { uploadProductImages } = require('../middleware/upload');
-  uploadProductImages(req, res, (err) => {
+  const { uploadProductWithCelebrity } = require('../middleware/upload');
+  uploadProductWithCelebrity(req, res, (err) => {
     if (err) return res.status(400).json({ success: false, message: err.message });
     next();
   });
@@ -162,9 +171,9 @@ router.put('/products/:id', (req, res, next) => {
       data = req.body;
     }
     // Merge newly uploaded images with kept existing ones
-    if (req.files && req.files.length > 0) {
+    if (req.files && req.files.images && req.files.images.length > 0) {
       const { getFileUrl } = require('../middleware/upload');
-      const newImgs = req.files.map((f, i) => ({
+      const newImgs = req.files.images.map((f, i) => ({
         url: getFileUrl(f, 'products'),
         alt: data.name || '',
         isPrimary: false,
@@ -177,6 +186,17 @@ router.put('/products/:id', (req, res, next) => {
       data.images = data.keepImages.map((img, i) => ({ ...img, isPrimary: i === 0 }));
     }
     delete data.keepImages;
+    
+    // Handle celebrity image
+    if (req.files && req.files.celebrityImage && req.files.celebrityImage.length > 0) {
+      const { getFileUrl } = require('../middleware/upload');
+      const celebFile = req.files.celebrityImage[0];
+      data.celebrityImage = {
+        url: getFileUrl(celebFile, 'products'),
+        alt: data.name || 'Celebrity Image',
+      };
+    }
+    
     const product = await Product.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
     res.json({ success: true, product });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
@@ -195,16 +215,30 @@ router.get('/categories', async (req, res) => {
   res.json({ success: true, categories: cats });
 });
 
-router.post('/categories', async (req, res) => {
+router.post('/categories', (req, res, next) => {
+  uploadSingleImage('categories')(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, message: err.message });
+    next();
+  });
+}, async (req, res) => {
   try {
-    const cat = await Category.create(req.body);
+    const data = { ...req.body };
+    if (req.file) data.image = getFileUrl(req.file, 'categories');
+    const cat = await Category.create(data);
     res.status(201).json({ success: true, category: cat });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
-router.put('/categories/:id', async (req, res) => {
+router.put('/categories/:id', (req, res, next) => {
+  uploadSingleImage('categories')(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, message: err.message });
+    next();
+  });
+}, async (req, res) => {
   try {
-    const cat = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const data = { ...req.body };
+    if (req.file) data.image = getFileUrl(req.file, 'categories');
+    const cat = await Category.findByIdAndUpdate(req.params.id, data, { new: true });
     res.json({ success: true, category: cat });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
@@ -290,6 +324,88 @@ router.put('/coupons/:id', async (req, res) => {
 router.delete('/coupons/:id', async (req, res) => {
   try {
     await Coupon.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ── Collections ───────────────────────────────────────────────────────────────
+router.get('/collections', async (req, res) => {
+  const collections = await Collection.find().sort('sortOrder');
+  res.json({ success: true, collections });
+});
+
+router.post('/collections', (req, res, next) => {
+  uploadSingleImage('categories')(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, message: err.message });
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const data = { ...req.body };
+    if (req.file) data.image = getFileUrl(req.file, 'categories');
+    const collection = await Collection.create(data);
+    res.status(201).json({ success: true, collection });
+  } catch (err) { res.status(400).json({ success: false, message: err.message }); }
+});
+
+router.put('/collections/:id', (req, res, next) => {
+  uploadSingleImage('categories')(req, res, (err) => {
+    if (err && req.file) return res.status(400).json({ success: false, message: err.message });
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const data = { ...req.body };
+    if (req.file) data.image = getFileUrl(req.file, 'categories');
+    const collection = await Collection.findByIdAndUpdate(req.params.id, data, { new: true });
+    res.json({ success: true, collection });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/collections/:id', async (req, res) => {
+  try {
+    await Collection.findByIdAndUpdate(req.params.id, { isActive: false });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ── Celebrity Picks ───────────────────────────────────────────────────────────
+router.get('/celebrity-picks', async (req, res) => {
+  const celebrityPicks = await CelebrityPick.find().sort('sortOrder');
+  res.json({ success: true, celebrityPicks });
+});
+
+router.post('/celebrity-picks', (req, res, next) => {
+  uploadSingleImage('categories')(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, message: err.message });
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const data = { ...req.body };
+    if (req.file) data.image = getFileUrl(req.file, 'categories');
+    const celebrityPick = await CelebrityPick.create(data);
+    res.status(201).json({ success: true, celebrityPick });
+  } catch (err) { res.status(400).json({ success: false, message: err.message }); }
+});
+
+router.put('/celebrity-picks/:id', (req, res, next) => {
+  uploadSingleImage('categories')(req, res, (err) => {
+    if (err && req.file) return res.status(400).json({ success: false, message: err.message });
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const data = { ...req.body };
+    if (req.file) data.image = getFileUrl(req.file, 'categories');
+    const celebrityPick = await CelebrityPick.findByIdAndUpdate(req.params.id, data, { new: true });
+    res.json({ success: true, celebrityPick });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/celebrity-picks/:id', async (req, res) => {
+  try {
+    await CelebrityPick.findByIdAndUpdate(req.params.id, { isActive: false });
     res.json({ success: true });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });

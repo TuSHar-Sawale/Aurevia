@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraGems – Admin Panel</title>
+<title>Aurevia – Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#f05a28;--primary-dark:#d44818;--primary-light:rgba(240,90,40,.12);--radius:12px;--tr:all .2s ease}
@@ -131,7 +131,7 @@ tr:hover td{background:var(--surface2)}
 <!-- SIDEBAR -->
 <aside class="sb">
   <div class="sb-logo">
-    <div class="logo">Aura<span>Gems</span></div>
+    <div class="logo">Aure<span>via</span></div>
     <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:3px">✦ FINE JEWELLERY</div>
   </div>
   <div class="sb-lbl">Main</div>
@@ -140,6 +140,7 @@ tr:hover td{background:var(--surface2)}
   <div class="nav-item" onclick="goSec('products',this)"><span class="ic">🛍️</span> Products</div>
   <div class="nav-item" onclick="goSec('bulk',this)"><span class="ic">⬆️</span> Bulk Upload</div>
   <div class="nav-item" onclick="goSec('cats',this)"><span class="ic">📁</span> Categories</div>
+  <div class="nav-item" onclick="goSec('colls',this)"><span class="ic">✨</span> Collections</div>
   <div class="sb-lbl">Promos</div>
   <div class="nav-item" onclick="goSec('coupons',this)"><span class="ic">🏷️</span> Coupons</div>
   <div class="sb-lbl">Store</div>
@@ -232,15 +233,13 @@ tr:hover td{background:var(--surface2)}
             <table style="font-size:.8rem">
               <thead><tr><th>Column</th><th>Required</th><th>Example</th></tr></thead>
               <tbody>
-                <tr><td><code style="color:var(--primary)">name</code></td><td><span class="badge b-ok">Yes</span></td><td>iPhone 15 Pro</td></tr>
-                <tr><td><code style="color:var(--primary)">description</code></td><td><span class="badge b-ok">Yes</span></td><td>Latest Apple flagship…</td></tr>
-                <tr><td><code style="color:var(--primary)">category</code></td><td><span class="badge b-ok">Yes</span></td><td>Electronics</td></tr>
-                <tr><td><code style="color:var(--primary)">price</code></td><td><span class="badge b-ok">Yes</span></td><td>79999</td></tr>
-                <tr><td><code style="color:var(--primary)">stock</code></td><td><span class="badge b-ok">Yes</span></td><td>50</td></tr>
-                <tr><td><code style="color:var(--primary)">mrp</code></td><td><span class="badge b-warn">No</span></td><td>89999</td></tr>
-                <tr><td><code style="color:var(--primary)">brand</code></td><td><span class="badge b-warn">No</span></td><td>Apple</td></tr>
-                <tr><td><code style="color:var(--primary)">sku</code></td><td><span class="badge b-warn">No</span></td><td>APL-001</td></tr>
-                <tr><td><code style="color:var(--primary)">tags</code></td><td><span class="badge b-warn">No</span></td><td>phone|5g|apple</td></tr>
+                <tr><td><code style="color:var(--primary)">name</code></td><td><span class="badge b-ok">Yes</span></td><td>Emerald Polki Maang Tikka</td></tr>
+                <tr><td><code style="color:var(--primary)">description</code></td><td><span class="badge b-ok">Yes</span></td><td>Handcrafted gold-plated maang tikka with polki stones and emerald accents…</td></tr>
+                <tr><td><code style="color:var(--primary)">category</code></td><td><span class="badge b-ok">Yes</span></td><td>Hair Accessories</td></tr>
+                <tr><td><code style="color:var(--primary)">price</code></td><td><span class="badge b-ok">Yes</span></td><td>3500</td></tr>
+                <tr><td><code style="color:var(--primary)">stock</code></td><td><span class="badge b-ok">Yes</span></td><td>18</td></tr>
+                <tr><td><code style="color:var(--primary)">mrp</code></td><td><span class="badge b-warn">No</span></td><td>4200</td></tr>
+                <tr><td><code style="color:var(--primary)">tags</code></td><td><span class="badge b-warn">No</span></td><td>maang tikka|polki|bridal|emerald</td></tr>
                 <tr><td><code style="color:var(--primary)">image_url</code></td><td><span class="badge b-warn">No</span></td><td>https://…/img.jpg</td></tr>
                 <tr><td><code style="color:var(--primary)">is_active</code></td><td><span class="badge b-warn">No</span></td><td>true / false</td></tr>
                 <tr><td><code style="color:var(--primary)">is_featured</code></td><td><span class="badge b-warn">No</span></td><td>true / false</td></tr>
@@ -288,7 +287,15 @@ tr:hover td{background:var(--surface2)}
     <div class="sec" id="sec-cats">
       <div style="margin-bottom:14px"><button class="tbtn primary" onclick="openCatModal()">+ Add Category</button></div>
       <div class="card">
-        <div class="tbl-wrap"><table><thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Status</th><th>Actions</th></tr></thead><tbody id="catTbody"></tbody></table></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Image</th><th>Name</th><th>Slug</th><th>Status</th><th>Actions</th></tr></thead><tbody id="catTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- COLLECTIONS -->
+    <div class="sec" id="sec-colls">
+      <div style="margin-bottom:14px"><button class="tbtn primary" onclick="openCollModal()">+ Add Collection</button></div>
+      <div class="card">
+        <div class="tbl-wrap"><table><thead><tr><th>Image</th><th>Name</th><th>Slug</th><th>Status</th><th>Actions</th></tr></thead><tbody id="collTbody"></tbody></table></div>
       </div>
     </div>
 
@@ -318,7 +325,7 @@ tr:hover td{background:var(--surface2)}
     <h3 id="prodModalTitle">Add Product</h3>
     <input type="hidden" id="editProdId">
     <div class="fgrid">
-      <div class="fg s2"><label>Product Name *</label><input id="pName" placeholder="e.g. iPhone 15 Pro"></div>
+      <div class="fg s2"><label>Product Name *</label><input id="pName" placeholder="e.g. Emerald Polki Maang Tikka"></div>
       <div class="fg" style="position:relative">
         <label>Category *</label>
         <input type="hidden" id="pCat">
@@ -334,17 +341,27 @@ tr:hover td{background:var(--surface2)}
             onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">+ Add</button>
         </div>
         <div id="catDropdown"
-          style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1.5px solid var(--primary);border-radius:0 0 10px 10px;z-index:999;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4)">
+          style="display:none;position:fixed;background:var(--surface);border:1.5px solid var(--primary);border-radius:0 0 10px 10px;z-index:1000;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4);min-width:200px">
         </div>
         <div id="pCatDisplay" style="font-size:.75rem;color:var(--success);margin-top:4px;display:none">✅ <span id="pCatName"></span></div>
       </div>
-      <div class="fg"><label>Brand</label><input id="pBrand" placeholder="Apple"></div>
-      <div class="fg"><label>SKU</label><input id="pSku" placeholder="APL-IP15-001"></div>
+      <div class="fg" style="position:relative">
+        <label>Collection</label>
+        <input type="hidden" id="pColl">
+        <div style="display:flex;gap:6px">
+          <select id="pCollInput" style="flex:1;padding:9px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.87rem;outline:none;transition:var(--tr)">
+            <option value="">Select a collection…</option>
+          </select>
+          <button type="button" onclick="openCollModal()" title="Create new collection"
+            style="padding:9px 13px;background:var(--primary);border:none;border-radius:8px;color:#fff;font-size:1rem;cursor:pointer;white-space:nowrap;transition:var(--tr)"
+            onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">+ Add</button>
+        </div>
+        <div id="pCollDisplay" style="font-size:.75rem;color:var(--success);margin-top:4px;display:none">✅ <span id="pCollName"></span></div>
+      </div>
       <div class="fg"><label>Price (₹) *</label><input type="number" id="pPrice" placeholder="79999"></div>
       <div class="fg"><label>MRP (₹)</label><input type="number" id="pMrp" placeholder="89999"></div>
       <div class="fg"><label>Stock *</label><input type="number" id="pStock" placeholder="50"></div>
-      <div class="fg"><label>Tags (comma separated)</label><input id="pTags" placeholder="phone, 5g, apple"></div>
-      <div class="fg s2"><label>Short Description</label><input id="pShortDesc" placeholder="One line summary"></div>
+      <div class="fg"><label>Tags (comma separated)</label><input id="pTags" placeholder="maang tikka, polki, bridal, emerald"></div>
       <div class="fg s2"><label>Description *</label><textarea id="pDesc" rows="3" placeholder="Full product description…"></textarea></div>
       <div class="fg s2">
         <label>Images (up to 8) — drag to reorder, ✕ to remove, first = primary</label>
@@ -357,10 +374,21 @@ tr:hover td{background:var(--surface2)}
           <span style="font-size:.75rem;color:var(--text3);margin-left:8px">PNG/JPG/WEBP · max 5MB each</span>
         </div>
       </div>
+      <div class="fg s2">
+        <label>Celebrity Image (only for Celebrity Picks)</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <label class="tbtn" style="padding:8px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer">
+            Upload Celebrity Image
+            <input type="file" id="pCelebImg" accept="image/*" style="display:none" onchange="previewCelebImg(this)">
+          </label>
+          <div id="pCelebImgPreview" style="width:72px;height:72px;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.82rem">No image</div>
+        </div>
+      </div>
       <div style="grid-column:1/-1;display:flex;gap:18px;flex-wrap:wrap">
         <label class="fcheck"><input type="checkbox" id="pActive" checked> Active</label>
         <label class="fcheck"><input type="checkbox" id="pFeatured"> Featured</label>
         <label class="fcheck"><input type="checkbox" id="pNew" checked> New Arrival</label>
+        <label class="fcheck" title="Product will only be visible in Celebrity Picks section"><input type="checkbox" id="pCelebPick"> ⭐ Celebrity Pick</label>
         <label class="fcheck" title="Allow Cash on Delivery for this product"><input type="checkbox" id="pCod" checked> 💵 COD Available</label>
       </div>
     </div>
@@ -377,13 +405,75 @@ tr:hover td{background:var(--surface2)}
     <button class="mclose" onclick="closeModal('catModal')">✕</button>
     <h3 id="catModalTitle">Add Category</h3>
     <input type="hidden" id="editCatId">
-    <div class="fg"><label>Name *</label><input id="cName" placeholder="Electronics"></div>
+    <div class="fg"><label>Name *</label><input id="cName" placeholder="Hair Accessories"></div>
     <div class="fg"><label>Icon (emoji)</label><input id="cIcon" placeholder="📱"></div>
+    <div class="fg"><label>Category Image</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label class="tbtn" style="padding:8px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer">
+          Upload Image
+          <input type="file" id="cImageFile" accept="image/*" style="display:none" onchange="previewCatImage(this)">
+        </label>
+        <div id="cImagePreview" style="width:72px;height:72px;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.82rem">No image</div>
+      </div>
+    </div>
     <div class="fg"><label>Description</label><textarea id="cDesc" rows="2" placeholder="Category description…"></textarea></div>
     <div class="fg"><label>Sort Order</label><input type="number" id="cSort" value="0"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
       <button class="tbtn" onclick="closeModal('catModal')">Cancel</button>
       <button class="tbtn primary" onclick="saveCat()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- COLLECTION MODAL -->
+<div class="modal-bg" id="collModal">
+  <div class="modal" style="max-width:400px">
+    <button class="mclose" onclick="closeModal('collModal')">✕</button>
+    <h3 id="collModalTitle">Add Collection</h3>
+    <input type="hidden" id="editCollId">
+    <div class="fg"><label>Name *</label><input id="collName" placeholder="e.g. Bridal Collection"></div>
+    <div class="fg"><label>Icon (emoji)</label><input id="collIcon" placeholder="💍"></div>
+    <div class="fg"><label>Collection Image</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label class="tbtn" style="padding:8px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer">
+          Upload Image
+          <input type="file" id="collImageFile" accept="image/*" style="display:none" onchange="previewCollImage(this)">
+        </label>
+        <div id="collImagePreview" style="width:72px;height:72px;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.82rem">No image</div>
+      </div>
+    </div>
+    <div class="fg"><label>Description</label><textarea id="collDesc" rows="2" placeholder="Collection description…"></textarea></div>
+    <div class="fg"><label>Sort Order</label><input type="number" id="collSort" value="0"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+      <button class="tbtn" onclick="closeModal('collModal')">Cancel</button>
+      <button class="tbtn primary" onclick="saveColl()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRITY PICK MODAL (Hidden) -->
+<div class="modal-bg" id="celebPickModal" style="display:none">
+  <div class="modal" style="max-width:400px">
+    <button class="mclose" onclick="closeModal('celebPickModal')">✕</button>
+    <h3 id="celebPickModalTitle">Add Celebrity Pick</h3>
+    <input type="hidden" id="editCelebPickId">
+    <div class="fg"><label>Celebrity Name *</label><input id="celebPickName" placeholder="e.g. Deepika Padukone"></div>
+    <div class="fg"><label>Celebrity Name (Short) *</label><input id="celebPickCelebrity" placeholder="e.g. Deepika"></div>
+    <div class="fg"><label>Icon (emoji)</label><input id="celebPickIcon" placeholder="⭐"></div>
+    <div class="fg"><label>Celebrity Pick Image</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label class="tbtn" style="padding:8px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer">
+          Upload Image
+          <input type="file" id="celebPickImageFile" accept="image/*" style="display:none" onchange="previewCelebPickImage(this)">
+        </label>
+        <div id="celebPickImagePreview" style="width:72px;height:72px;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.82rem">No image</div>
+      </div>
+    </div>
+    <div class="fg"><label>Description</label><textarea id="celebPickDesc" rows="2" placeholder="Celebrity pick description…"></textarea></div>
+    <div class="fg"><label>Sort Order</label><input type="number" id="celebPickSort" value="0"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+      <button class="tbtn" onclick="closeModal('celebPickModal')">Cancel</button>
+      <button class="tbtn primary" onclick="saveCelebPick()">Save</button>
     </div>
   </div>
 </div>
@@ -446,10 +536,8 @@ let USER  = JSON.parse(localStorage.getItem('sn_user') || 'null');
 /* ── Image URL resolver ─────────────────────────────────────────── */
 function imgUrl(url) {
   if (!url) return '';
-  // Already absolute — use as-is
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  // Relative path — always point to backend at port 5000
-  return 'http://localhost:5000' + (url.startsWith('/') ? url : '/' + url);
+  return new URL(url.startsWith('/') ? url : '/' + url, window.location.origin).toString();
 }
 let prodPage = 1;
 let allCats = [];
@@ -517,7 +605,7 @@ function toast(msg, type = 'ok') {
 }
 
 /* ── Navigation ─────────────────────────── */
-const TITLES = { dashboard: 'Dashboard', orders: 'Orders', products: 'Products', bulk: 'Bulk Upload', cats: 'Categories', users: 'Customers', coupons: 'Coupons' };
+const TITLES = { dashboard: 'Dashboard', orders: 'Orders', products: 'Products', bulk: 'Bulk Upload', cats: 'Categories', colls: 'Collections', users: 'Customers', coupons: 'Coupons' };
 function goSec(name, navEl) {
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('on'));
@@ -527,6 +615,7 @@ function goSec(name, navEl) {
   if (name === 'orders') loadOrders('');
   if (name === 'products') loadAdminProds();
   if (name === 'cats') loadAdminCats();
+  if (name === 'colls') loadAdminColls();
   if (name === 'users') loadUsers();
   if (name === 'coupons') loadCoupons();
 }
@@ -593,7 +682,7 @@ async function loadAdminProds() {
   document.getElementById('prodTbody').innerHTML = d.products.map(p => `
     <tr>
       <td><img class="pthumb" src="${imgUrl(p.images?.[0]?.url)}" onerror="this.style.background='var(--surface2)'"></td>
-      <td style="max-width:180px"><div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div><small style="color:var(--text3)">${p.sku||''}</small></td>
+      <td style="max-width:180px"><div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div></td>
       <td>${p.category?.name||'–'}</td>
       <td>₹${p.price?.toLocaleString()}<br><small style="color:var(--text3)">${p.mrp?'MRP ₹'+p.mrp.toLocaleString():''}</small></td>
       <td style="color:${p.stock<5?'var(--danger)':p.stock<20?'var(--warn)':'var(--success)'};font-weight:700">${p.stock}</td>
@@ -616,13 +705,10 @@ async function editProd(id) {
   const p = d.product;
   document.getElementById('editProdId').value = p._id;
   document.getElementById('pName').value = p.name;
-  document.getElementById('pBrand').value = p.brand || '';
-  document.getElementById('pSku').value = p.sku || '';
   document.getElementById('pPrice').value = p.price;
   document.getElementById('pMrp').value = p.mrp || '';
   document.getElementById('pStock').value = p.stock;
   document.getElementById('pTags').value = p.tags?.join(', ') || '';
-  document.getElementById('pShortDesc').value = p.shortDesc || '';
   document.getElementById('pDesc').value = p.description;
   const catId = p.category?._id || p.category;
   const catName = p.category?.name || '';
@@ -636,10 +722,33 @@ async function editProd(id) {
   existingImages = (p.images || []).map(img => ({ url: img.url, alt: img.alt || p.name, isPrimary: img.isPrimary }));
   newFiles = [];
   renderImgPrevs();
+  // Load celebrity image
+  celebImageFile = null;
+  if (p.celebrityImage?.url) {
+    const preview = document.getElementById('pCelebImgPreview');
+    const img = document.createElement('img');
+    img.src = p.celebrityImage.url;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+    preview.innerHTML = '';
+    preview.appendChild(img);
+  } else {
+    document.getElementById('pCelebImgPreview').innerHTML = '<span>No image</span>';
+  }
   document.getElementById('pActive').checked = p.isActive;
   document.getElementById('pFeatured').checked = p.isFeatured;
   document.getElementById('pNew').checked = p.isNewArrival;
   document.getElementById('pCod').checked = p.codAvailable !== false;
+  document.getElementById('pCelebPick').checked = p.isCelebrityPick || false;
+  // Load collection
+  const collId = p.collection?._id || p.collection;
+  const collName = p.collection?.name || '';
+  document.getElementById('pCollInput').value = collId || '';
+  if (collName) {
+    document.getElementById('pCollDisplay').style.display = '';
+    document.getElementById('pCollName').textContent = collName;
+  } else {
+    document.getElementById('pCollDisplay').style.display = 'none';
+  }
   document.getElementById('prodModalTitle').textContent = 'Edit Product';
   openModal('prodModal');
 }
@@ -651,34 +760,39 @@ async function delProd(id) {
 function openProdModal() {
   document.getElementById('editProdId').value = '';
   document.getElementById('prodModalTitle').textContent = 'Add Product';
-  ['pName','pBrand','pSku','pPrice','pMrp','pStock','pTags','pShortDesc','pDesc'].forEach(i => document.getElementById(i).value = '');
-  document.getElementById('pActive').checked = true; document.getElementById('pFeatured').checked = false; document.getElementById('pNew').checked = true; document.getElementById('pCod').checked = true;
+  ['pName','pPrice','pMrp','pStock','pTags','pDesc'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('pActive').checked = true; document.getElementById('pFeatured').checked = false; document.getElementById('pNew').checked = true; document.getElementById('pCelebPick').checked = false; document.getElementById('pCod').checked = true;
   existingImages = []; newFiles = [];
   renderImgPrevs();
+  celebImageFile = null;
+  document.getElementById('pCelebImg').value = '';
+  document.getElementById('pCelebImgPreview').innerHTML = '<span>No image</span>';
   document.getElementById('pCat').value = '';
   document.getElementById('pCatInput').value = '';
   document.getElementById('pCatDisplay').style.display = 'none';
   document.getElementById('catDropdown').style.display = 'none';
+  document.getElementById('pCollInput').value = '';
+  document.getElementById('pCollDisplay').style.display = 'none';
   loadCatsForForm();
+  loadCollsForForm();
   openModal('prodModal');
 }
 async function saveProd() {
   const id = document.getElementById('editProdId').value;
   const data = {
     name: document.getElementById('pName').value.trim(),
-    brand: document.getElementById('pBrand').value.trim(),
-    sku: document.getElementById('pSku').value.trim(),
     price: +document.getElementById('pPrice').value,
     mrp: +document.getElementById('pMrp').value || undefined,
     stock: +document.getElementById('pStock').value,
     tags: document.getElementById('pTags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    shortDesc: document.getElementById('pShortDesc').value.trim(),
     description: document.getElementById('pDesc').value.trim(),
     category: document.getElementById('pCat').value,
     categoryName: document.getElementById('pCatInput').value.trim(),
+    collection: document.getElementById('pCollInput').value || undefined,
     isActive: document.getElementById('pActive').checked,
     isFeatured: document.getElementById('pFeatured').checked,
     isNewArrival: document.getElementById('pNew').checked,
+    isCelebrityPick: document.getElementById('pCelebPick').checked,
     codAvailable: document.getElementById('pCod').checked,
     keepImages: existingImages,
   };
@@ -688,6 +802,7 @@ async function saveProd() {
   const fd = new FormData();
   fd.append('data', JSON.stringify(data));
   for (const f of newFiles) fd.append('images', f);
+  if (celebImageFile) fd.append('celebrityImage', celebImageFile);
 
   const url = id ? (API + '/admin/products/' + id) : (API + '/products');
   const method = id ? 'PUT' : 'POST';
@@ -704,6 +819,7 @@ async function saveProd() {
 // newFiles: array of File objects (newly added)
 let existingImages = [];
 let newFiles = [];
+let celebImageFile = null;
 
 function renderImgPrevs() {
   const prev = document.getElementById('imgPrevs');
@@ -793,6 +909,25 @@ document.getElementById('pImgs').addEventListener('change', function() {
   renderImgPrevs();
 });
 
+function previewCelebImg(input) {
+  if (!input.files?.[0]) {
+    celebImageFile = null;
+    document.getElementById('pCelebImgPreview').innerHTML = '<span>No image</span>';
+    return;
+  }
+  celebImageFile = input.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+    const preview = document.getElementById('pCelebImgPreview');
+    preview.innerHTML = '';
+    preview.appendChild(img);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
 /* ── Categories ─────────────────────────── */
 async function loadCatsForForm() {
   // Try multiple endpoints
@@ -832,7 +967,13 @@ function renderCatDropdown(cats, filter='') {
 
 function openCatDropdown() {
   const dd = document.getElementById('catDropdown');
-  renderCatDropdown(allCats, document.getElementById('pCatInput').value);
+  const input = document.getElementById('pCatInput');
+  renderCatDropdown(allCats, input.value);
+  // Position dropdown relative to input
+  const rect = input.getBoundingClientRect();
+  dd.style.top = (rect.bottom) + 'px';
+  dd.style.left = rect.left + 'px';
+  dd.style.width = rect.width + 'px';
   dd.style.display = 'block';
   // Close on outside click
   setTimeout(() => {
@@ -890,7 +1031,7 @@ async function loadAdminCats() {
   if (!d.success) return;
   document.getElementById('catTbody').innerHTML = d.categories.map(c => `
     <tr>
-      <td style="font-size:1.4rem">${c.icon||'📦'}</td>
+      <td>${c.image ? `<img src="${c.image}" style="width:48px;height:32px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">` : `<span style="font-size:1.4rem">${c.icon||'📦'}</span>`}</td>
       <td style="font-weight:600">${c.name}</td>
       <td style="color:var(--text3);font-size:.82rem">${c.slug}</td>
       <td><span class="badge ${c.isActive?'b-ok':'b-err'}">${c.isActive?'Active':'Hidden'}</span></td>
@@ -905,6 +1046,8 @@ function openCatModal() {
   document.getElementById('catModalTitle').textContent = 'Add Category';
   ['cName','cIcon','cDesc'].forEach(i => document.getElementById(i).value = '');
   document.getElementById('cSort').value = 0;
+  document.getElementById('cImageFile').value = '';
+  document.getElementById('cImagePreview').innerHTML = 'No image';
   openModal('catModal');
 }
 function editCat(c) {
@@ -913,20 +1056,224 @@ function editCat(c) {
   document.getElementById('cIcon').value = c.icon || '';
   document.getElementById('cDesc').value = c.description || '';
   document.getElementById('cSort').value = c.sortOrder || 0;
+  document.getElementById('cImageFile').value = '';
+  document.getElementById('cImagePreview').innerHTML = c.image ? `<img src="${c.image}" style="width:100%;height:100%;object-fit:cover">` : 'No image';
   document.getElementById('catModalTitle').textContent = 'Edit Category';
   openModal('catModal');
 }
+function previewCatImage(input) {
+  const preview = document.getElementById('cImagePreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => preview.innerHTML = `<img src="${reader.result}" style="width:100%;height:100%;object-fit:cover">`;
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.innerHTML = 'No image';
+  }
+}
+
 async function saveCat() {
   const id = document.getElementById('editCatId').value;
-  const body = { name: document.getElementById('cName').value.trim(), icon: document.getElementById('cIcon').value.trim(), description: document.getElementById('cDesc').value.trim(), sortOrder: +document.getElementById('cSort').value };
-  if (!body.name) return toast('Name required', 'err');
-  const d = await api(id ? '/admin/categories/'+id : '/admin/categories', { method: id?'PUT':'POST', json: body });
+  const name = document.getElementById('cName').value.trim();
+  const icon = document.getElementById('cIcon').value.trim();
+  const description = document.getElementById('cDesc').value.trim();
+  const sortOrder = +document.getElementById('cSort').value;
+  if (!name) return toast('Name required', 'err');
+  const fileInput = document.getElementById('cImageFile');
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('icon', icon);
+  fd.append('description', description);
+  fd.append('sortOrder', sortOrder);
+  if (fileInput.files && fileInput.files[0]) {
+    fd.append('image', fileInput.files[0]);
+  }
+  const d = await api(id ? '/admin/categories/'+id : '/admin/categories', { method: id?'PUT':'POST', body: fd });
   if (d.success) { toast('Saved!'); closeModal('catModal'); loadAdminCats(); loadCatsForForm(); } else toast(d.message, 'err');
 }
 async function delCat(id) {
   if (!await confirmBox('Delete this category?')) return;
   const d = await api('/admin/categories/' + id, { method: 'DELETE' });
   if (d.success) { toast('Deleted'); loadAdminCats(); }
+}
+
+/* ── Collections ────────────────────────── */
+async function loadAdminColls() {
+  const d = await api('/admin/collections');
+  if (!d.success) return;
+  document.getElementById('collTbody').innerHTML = d.collections.map(c => `
+    <tr>
+      <td>${c.image ? `<img src="${c.image}" style="width:48px;height:32px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">` : `<span style="font-size:1.4rem">${c.icon||'✨'}</span>`}</td>
+      <td style="font-weight:600">${c.name}</td>
+      <td style="color:var(--text3);font-size:.82rem">${c.slug}</td>
+      <td><span class="badge ${c.isActive?'b-ok':'b-err'}">${c.isActive?'Active':'Hidden'}</span></td>
+      <td style="display:flex;gap:6px;padding-top:12px">
+        <button class="tbtn" style="font-size:.75rem;padding:4px 10px" onclick='editColl(${JSON.stringify(c).replace(/'/g,"&#39;")})'>✏️ Edit</button>
+        <button class="tbtn" style="font-size:.75rem;padding:4px 10px;color:var(--danger)" onclick="delColl('${c._id}')">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+function openCollModal() {
+  document.getElementById('editCollId').value = '';
+  document.getElementById('collModalTitle').textContent = 'Add Collection';
+  ['collName','collIcon','collDesc'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('collSort').value = 0;
+  document.getElementById('collImageFile').value = '';
+  document.getElementById('collImagePreview').innerHTML = 'No image';
+  openModal('collModal');
+}
+function editColl(c) {
+  document.getElementById('editCollId').value = c._id;
+  document.getElementById('collName').value = c.name;
+  document.getElementById('collIcon').value = c.icon || '';
+  document.getElementById('collDesc').value = c.description || '';
+  document.getElementById('collSort').value = c.sortOrder || 0;
+  document.getElementById('collImageFile').value = '';
+  document.getElementById('collImagePreview').innerHTML = c.image ? `<img src="${c.image}" style="width:100%;height:100%;object-fit:cover">` : 'No image';
+  document.getElementById('collModalTitle').textContent = 'Edit Collection';
+  openModal('collModal');
+}
+function previewCollImage(input) {
+  const preview = document.getElementById('collImagePreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => preview.innerHTML = `<img src="${reader.result}" style="width:100%;height:100%;object-fit:cover">`;
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.innerHTML = 'No image';
+  }
+}
+
+async function saveColl() {
+  const id = document.getElementById('editCollId').value;
+  const name = document.getElementById('collName').value.trim();
+  const icon = document.getElementById('collIcon').value.trim();
+  const description = document.getElementById('collDesc').value.trim();
+  const sortOrder = +document.getElementById('collSort').value;
+  if (!name) return toast('Name required', 'err');
+  const fileInput = document.getElementById('collImageFile');
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('icon', icon);
+  fd.append('description', description);
+  fd.append('sortOrder', sortOrder);
+  if (fileInput.files && fileInput.files[0]) {
+    fd.append('image', fileInput.files[0]);
+  }
+  const d = await api(id ? '/admin/collections/'+id : '/admin/collections', { method: id?'PUT':'POST', body: fd });
+  if (d.success) { toast('Saved!'); closeModal('collModal'); loadAdminColls(); loadCollsForForm(); } else toast(d.message, 'err');
+}
+
+async function delColl(id) {
+  if (!await confirmBox('Delete this collection?')) return;
+  const d = await api('/admin/collections/' + id, { method: 'DELETE' });
+  if (d.success) { toast('Deleted'); loadAdminColls(); loadCollsForForm(); }
+}
+let allColls = [];
+
+async function loadCollsForForm() {
+  try {
+    const d = await api('/products/meta/collections');
+    if (d.success && d.collections?.length) {
+      allColls = d.collections;
+      renderCollDropdown(allColls);
+      return;
+    }
+  } catch(e) {}
+  console.warn('No collections loaded from API');
+}
+
+function renderCollDropdown(colls) {
+  const dd = document.getElementById('pCollInput');
+  dd.innerHTML = '<option value="">Select a collection…</option>' + colls.map(c => `<option value="${c._id}">${c.icon||'📦'} ${c.name}</option>`).join('');
+}
+
+function openCollModal() {
+  document.getElementById('editCollId').value = '';
+  document.getElementById('collModalTitle').textContent = 'Add Collection';
+  ['collName','collIcon','collDesc'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('collSort').value = 0;
+  document.getElementById('collImageFile').value = '';
+  document.getElementById('collImagePreview').innerHTML = 'No image';
+  openModal('collModal');
+}
+
+async function saveColl() {
+  const id = document.getElementById('editCollId').value;
+  const name = document.getElementById('collName').value.trim();
+  const icon = document.getElementById('collIcon').value.trim();
+  const description = document.getElementById('collDesc').value.trim();
+  const sortOrder = +document.getElementById('collSort').value;
+  if (!name) return toast('Name required', 'err');
+  const fileInput = document.getElementById('collImageFile');
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('icon', icon);
+  fd.append('description', description);
+  fd.append('sortOrder', sortOrder);
+  if (fileInput.files && fileInput.files[0]) {
+    fd.append('image', fileInput.files[0]);
+  }
+  const d = await api(id ? '/admin/collections/'+id : '/admin/collections', { method: id?'PUT':'POST', body: fd });
+  if (d.success) { toast('Saved!'); closeModal('collModal'); loadCollsForForm(); } else toast(d.message, 'err');
+}
+
+function previewCollImage(input) {
+  const preview = document.getElementById('collImagePreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => preview.innerHTML = `<img src="${reader.result}" style="width:100%;height:100%;object-fit:cover">`;
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.innerHTML = 'No image';
+  }
+}
+
+/* ── Celebrity Picks ────────────────────── */
+// Celebrity picks management moved to admin section only
+// Celebrity pick products are assigned directly in backend, not through product form
+
+function openCelebPickModal() {
+  document.getElementById('editCelebPickId').value = '';
+  document.getElementById('celebPickModalTitle').textContent = 'Add Celebrity Pick';
+  ['celebPickName','celebPickCelebrity','celebPickIcon','celebPickDesc'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('celebPickSort').value = 0;
+  document.getElementById('celebPickImageFile').value = '';
+  document.getElementById('celebPickImagePreview').innerHTML = 'No image';
+  openModal('celebPickModal');
+}
+
+async function saveCelebPick() {
+  const id = document.getElementById('editCelebPickId').value;
+  const name = document.getElementById('celebPickName').value.trim();
+  const celebrity = document.getElementById('celebPickCelebrity').value.trim();
+  const icon = document.getElementById('celebPickIcon').value.trim();
+  const description = document.getElementById('celebPickDesc').value.trim();
+  const sortOrder = +document.getElementById('celebPickSort').value;
+  if (!name || !celebrity) return toast('Name and Celebrity Name required', 'err');
+  const fileInput = document.getElementById('celebPickImageFile');
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('celebrity', celebrity);
+  fd.append('icon', icon);
+  fd.append('description', description);
+  fd.append('sortOrder', sortOrder);
+  if (fileInput.files && fileInput.files[0]) {
+    fd.append('image', fileInput.files[0]);
+  }
+  const d = await api(id ? '/admin/celebrity-picks/'+id : '/admin/celebrity-picks', { method: id?'PUT':'POST', body: fd });
+  if (d.success) { toast('Saved!'); closeModal('celebPickModal'); loadCelebPicksForForm(); } else toast(d.message, 'err');
+}
+
+function previewCelebPickImage(input) {
+  const preview = document.getElementById('celebPickImagePreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => preview.innerHTML = `<img src="${reader.result}" style="width:100%;height:100%;object-fit:cover">`;
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.innerHTML = 'No image';
+  }
 }
 
 /* ── Users ──────────────────────────────── */

@@ -81,6 +81,15 @@ exports.uploadSingleImage = (folder) => multer({
   limits: { fileSize: 2 * 1024 * 1024 },
 }).single('image');
 
+exports.uploadProductWithCelebrity = multer({
+  storage: getStorage('products'),
+  fileFilter: imageFilter,
+  limits: { fileSize: 5 * 1024 * 1024, files: 9 },
+}).fields([
+  { name: 'images', maxCount: 8 },
+  { name: 'celebrityImage', maxCount: 1 }
+]);
+
 exports.uploadBulkCSV = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {

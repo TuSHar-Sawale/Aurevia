@@ -9,6 +9,9 @@ const rateLimit  = require('express-rate-limit');
 
 const app = express();
 
+// Trust Railway/Render style reverse proxies so rate limiting and request IPs work correctly.
+app.set('trust proxy', 1);
+
 // ─── CORS ──────────────────────────────────────────────────────────────────
 // Since the frontend is served BY this Express server (same origin),
 // CORS is only needed for external API clients (Postman, mobile apps, etc.)
@@ -167,7 +170,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log('');
-  console.log('🚀 ShopNest is running!');
+  console.log('🚀 Aurevia is running!');
   console.log(`   🛍️  Store  →  http://localhost:${PORT}`);
   console.log(`   🔧  Admin  →  http://localhost:${PORT}/admin`);
   console.log(`   🔌  API    →  http://localhost:${PORT}/api`);

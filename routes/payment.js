@@ -66,7 +66,7 @@ router.post('/create-order', protect, async (req, res) => {
         orderId:  rzpOrder.id,
         amount:   rzpOrder.amount,
         currency: rzpOrder.currency,
-        name:     'ShopNest Marketplace',
+        name:     'Aurevia',
         description: `Order ${order.orderId}`,
       },
     });

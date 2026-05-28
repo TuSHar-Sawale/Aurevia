@@ -14,9 +14,13 @@ const productSchema = new mongoose.Schema({
   description:  { type: String, required: true },
   shortDesc:    { type: String },
   category:     { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
+  collection:   { type: mongoose.Schema.Types.ObjectId, ref: 'Collection' },
+  isCelebrityPick: { type: Boolean, default: false },
+  celebrityPick: { type: mongoose.Schema.Types.ObjectId, ref: 'CelebrityPick' },
+  celebrityImage: { url: String, alt: String },
   subcategory:  { type: String },
-  brand:        { type: String },
-  sku:          { type: String, unique: true, sparse: true },
+  weight:       { type: String },
+  sku:          { type: String, index: { unique: true, sparse: true } },
   price:        { type: Number, required: true, min: 0 },
   mrp:          { type: Number },
   discount:     { type: Number, default: 0 },
@@ -44,12 +48,16 @@ const productSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Auto-generate slug
+// Auto-generate slug and SKU
 productSchema.pre('save', function(next) {
   if (this.isModified('name')) {
     this.slug = this.name.toLowerCase()
       .replace(/[^a-z0-9 ]/g, '')
       .replace(/\s+/g, '-') + '-' + Date.now();
+  }
+  // Auto-generate SKU if not provided
+  if (!this.sku) {
+    this.sku = this.name.substring(0, 3).toUpperCase() + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
   }
   // Calculate discount if mrp given
   if (this.mrp && this.price) {
