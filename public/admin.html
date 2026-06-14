@@ -172,7 +172,7 @@ tr:hover td{background:var(--surface2)}
         <div class="stat-card y"><span class="stat-ico">🛍️</span><div class="stat-lbl">Products</div><div class="stat-val" id="sProd">0</div><div class="stat-sub">Active listings</div></div>
         <div class="stat-card b"><span class="stat-ico">👥</span><div class="stat-lbl">Customers</div><div class="stat-val" id="sUsers">0</div><div class="stat-sub">Registered</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;margin-bottom:20px">
         <div class="card">
           <div class="card-head"><h3>Revenue – Last 7 Days</h3></div>
           <div style="padding:18px"><div class="chart-bars" id="chartBars"></div><div class="chart-lbls" id="chartLbls"></div></div>
@@ -182,8 +182,12 @@ tr:hover td{background:var(--surface2)}
           <div style="padding:20px;text-align:center">
             <div style="font-size:3rem;font-weight:800;color:var(--warn);font-family:'Syne',sans-serif" id="bigPend">0</div>
             <div style="color:var(--text3);font-size:.83rem;margin:6px 0 14px">Awaiting action</div>
-            <button class="tbtn primary" style="width:100%" onclick="goSec('orders',null)">Manage Orders →</button>
+            <button class="tbtn primary" style="width:100%" onclick="goSec('orders',null)">Manage →</button>
           </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📊 Top Products</h3></div>
+          <div style="padding:14px"><table style="font-size:.82rem;width:100%"><tbody id="topProdTbody"></tbody></table></div>
         </div>
       </div>
       <div class="card">
@@ -641,6 +645,15 @@ async function loadDashboard() {
     `<div class="cbar" style="height:${Math.max((c.revenue/maxR)*100,2)}%" title="₹${(c.revenue||0).toLocaleString()}"></div>`).join('');
   document.getElementById('chartLbls').innerHTML = chart.map(c =>
     `<div class="clbl">${c.date?.slice(5)}</div>`).join('');
+
+  // Top Products by Sales
+  const topProds = d.topProducts || [];
+  document.getElementById('topProdTbody').innerHTML = topProds.map((p, i) => `
+    <tr style="border-bottom:1px solid var(--border);padding:8px 0">
+      <td style="padding:6px 0;color:var(--text3)">${i+1}.</td>
+      <td style="padding:6px 8px;font-weight:600;overflow:hidden;text-overflow:ellipsis;max-width:120px">${p.name}</td>
+      <td style="padding:6px 0;text-align:right;color:var(--primary);font-weight:700">${p.quantity}x</td>
+    </tr>`).join('');
 
   const od = await api('/admin/orders?limit=6');
   if (od.success) document.getElementById('recentTbody').innerHTML = od.orders.map(o => `

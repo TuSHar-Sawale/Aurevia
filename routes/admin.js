@@ -17,18 +17,18 @@ router.get('/dashboard', async (req, res) => {
       Product.countDocuments({ isActive: true }),
       Order.countDocuments(),
       User.countDocuments({ role: 'user' }),
-      Order.find({ 'payment.status': 'paid' }).select('total createdAt status'),
+      Order.find({ 'payment.status': 'paid' }).select('total createdAt status items').populate('items.product'),
     ]);
 
     const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-    const today = new Date(); today.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
     const todayOrders = orders.filter(o => new Date(o.createdAt) >= today).length;
     const pendingOrders = await Order.countDocuments({ status: { $in: ['pending', 'confirmed', 'processing'] } });
 
     // Revenue last 7 days
     const revenueChart = [];
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i); d.setHours(0,0,0,0);
+      const d = new Date(); d.setDate(d.getDate() - i); d.setHours(0, 0, 0, 0);
       const next = new Date(d); next.setDate(next.getDate() + 1);
       const dayRev = orders.filter(o => {
         const od = new Date(o.createdAt);
@@ -37,7 +37,29 @@ router.get('/dashboard', async (req, res) => {
       revenueChart.push({ date: d.toISOString().split('T')[0], revenue: dayRev });
     }
 
-    res.json({ success: true, stats: { totalProducts, totalOrders, totalUsers, revenue, todayOrders, pendingOrders }, revenueChart });
+    // Top 5 Products by Sales
+    const productSales = {};
+    orders.forEach(order => {
+      if (order.items) {
+        order.items.forEach(item => {
+          const pId = item.product._id.toString();
+          const pName = item.product.name || 'Unknown';
+          if (!productSales[pId]) productSales[pId] = { name: pName, quantity: 0, revenue: 0 };
+          productSales[pId].quantity += item.quantity;
+          productSales[pId].revenue += (item.price * item.quantity);
+        });
+      }
+    });
+    const topProducts = Object.values(productSales)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+
+    res.json({ 
+      success: true, 
+      stats: { totalProducts, totalOrders, totalUsers, revenue, todayOrders, pendingOrders }, 
+      revenueChart,
+      topProducts
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -68,20 +90,20 @@ router.post('/products/bulk', (req, res, next) => {
         }
 
         const productData = {
-          name:        row.name,
+          name: row.name,
           description: row.description || row.name,
-          shortDesc:   row.short_description || '',
-          price:       parseFloat(row.price) || 0,
-          mrp:         parseFloat(row.mrp) || parseFloat(row.price),
-          stock:       parseInt(row.stock) || 0,
-          brand:       row.brand || '',
-          sku:         row.sku || '',
-          category:    category._id,
-          tags:        row.tags ? row.tags.split('|').map(t => t.trim()) : [],
-          isActive:    row.is_active !== 'false',
-          isFeatured:  row.is_featured === 'true',
-          images:      [
-            row.image_url   ? { url: row.image_url,   alt: row.name, isPrimary: true  } : null,
+          shortDesc: row.short_description || '',
+          price: parseFloat(row.price) || 0,
+          mrp: parseFloat(row.mrp) || parseFloat(row.price),
+          stock: parseInt(row.stock) || 0,
+          brand: row.brand || '',
+          sku: row.sku || '',
+          category: category._id,
+          tags: row.tags ? row.tags.split('|').map(t => t.trim()) : [],
+          isActive: row.is_active !== 'false',
+          isFeatured: row.is_featured === 'true',
+          images: [
+            row.image_url ? { url: row.image_url, alt: row.name, isPrimary: true } : null,
             row.image_url_2 ? { url: row.image_url_2, alt: row.name, isPrimary: false } : null,
             row.image_url_3 ? { url: row.image_url_3, alt: row.name, isPrimary: false } : null,
             row.image_url_4 ? { url: row.image_url_4, alt: row.name, isPrimary: false } : null,
@@ -119,7 +141,7 @@ router.post('/products/bulk', (req, res, next) => {
 // ── CSV Template Download ─────────────────────────────────────────────────────
 router.get('/products/bulk/template', (req, res) => {
   const headers = 'name,description,short_description,category,brand,sku,price,mrp,stock,tags,image_url,image_url_2,image_url_3,image_url_4,is_active,is_featured\n';
-  const sample  = 'Sample Product,Full product description,Short desc,Electronics,BrandName,SKU001,999,1299,50,tag1|tag2,https://example.com/img.jpg,true,false\n';
+  const sample = 'Sample Product,Full product description,Short desc,Electronics,BrandName,SKU001,999,1299,50,tag1|tag2,https://example.com/img.jpg,true,false\n';
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'attachment; filename=products_template.csv');
   res.send(headers + sample);
@@ -138,9 +160,9 @@ router.get('/products', async (req, res) => {
       .populate('collection', 'name')
       .populate('celebrityPick', 'name celebrity')
       .sort('-createdAt')
-      .skip((page-1)*limit)
+      .skip((page - 1) * limit)
       .limit(+limit);
-    res.json({ success: true, products, total, pages: Math.ceil(total/limit) });
+    res.json({ success: true, products, total, pages: Math.ceil(total / limit) });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
@@ -186,7 +208,7 @@ router.put('/products/:id', (req, res, next) => {
       data.images = data.keepImages.map((img, i) => ({ ...img, isPrimary: i === 0 }));
     }
     delete data.keepImages;
-    
+
     // Handle celebrity image
     if (req.files && req.files.celebrityImage && req.files.celebrityImage.length > 0) {
       const { getFileUrl } = require('../middleware/upload');
@@ -196,7 +218,7 @@ router.put('/products/:id', (req, res, next) => {
         alt: data.name || 'Celebrity Image',
       };
     }
-    
+
     const product = await Product.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
     res.json({ success: true, product });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
@@ -256,8 +278,8 @@ router.get('/orders', async (req, res) => {
     const { page = 1, limit = 20, status } = req.query;
     const query = status ? { status } : {};
     const total = await Order.countDocuments(query);
-    const orders = await Order.find(query).populate('user', 'name email').sort('-createdAt').skip((page-1)*limit).limit(+limit);
-    res.json({ success: true, orders, total, pages: Math.ceil(total/limit) });
+    const orders = await Order.find(query).populate('user', 'name email').sort('-createdAt').skip((page - 1) * limit).limit(+limit);
+    res.json({ success: true, orders, total, pages: Math.ceil(total / limit) });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
@@ -287,7 +309,7 @@ router.get('/users', async (req, res) => {
   try {
     const { page = 1, limit = 20 } = req.query;
     const total = await User.countDocuments();
-    const users = await User.find().select('-password').sort('-createdAt').skip((page-1)*limit).limit(+limit);
+    const users = await User.find().select('-password').sort('-createdAt').skip((page - 1) * limit).limit(+limit);
     res.json({ success: true, users, total });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });

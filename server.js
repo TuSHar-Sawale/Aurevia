@@ -216,6 +216,14 @@ app.listen(PORT, () => {
   console.log('');
   console.log('   ✅ Just open http://localhost:5000 — no Live Server needed!');
   console.log('');
+  
+  // Startup checks
+  console.log('📋 Configuration Check:');
+  console.log(`   ${process.env.JWT_SECRET ? '✅' : '❌'} JWT_SECRET configured`);
+  console.log(`   ${process.env.MONGO_URI ? '✅' : '❌'} MongoDB URI configured`);
+  console.log(`   ${process.env.RAZORPAY_KEY_ID ? '✅' : '❌'} RAZORPAY_KEY_ID: ${process.env.RAZORPAY_KEY_ID ? '***' + process.env.RAZORPAY_KEY_ID.slice(-8) : 'missing'}`);
+  console.log(`   ${process.env.RAZORPAY_KEY_SECRET ? '✅' : '❌'} RAZORPAY_KEY_SECRET: ${process.env.RAZORPAY_KEY_SECRET ? '***' + process.env.RAZORPAY_KEY_SECRET.slice(-8) : 'missing'}`);
+  console.log('');
 });
 
 module.exports = app;

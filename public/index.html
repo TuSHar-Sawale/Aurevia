@@ -1132,7 +1132,15 @@ initTheme();
 
 /* ── API helper ─────────────────────────────────────────────────── */
 async function req(url, opts = {}) {
-  if (TOKEN) opts.headers = { ...(opts.headers || {}), Authorization: `Bearer ${TOKEN}` };
+  // Ensure credentials are included for CORS
+  opts.credentials = opts.credentials || 'include';
+  
+  if (TOKEN) {
+    opts.headers = { ...(opts.headers || {}), Authorization: `Bearer ${TOKEN}` };
+  } else {
+    console.warn('⚠️ No auth token found. User may not be logged in.');
+  }
+  
   if (opts.json) {
     opts.headers = { ...(opts.headers || {}), 'Content-Type': 'application/json' };
     opts.body = JSON.stringify(opts.json);
@@ -1141,6 +1149,12 @@ async function req(url, opts = {}) {
   }
   try {
     const r = await fetch(API + url, opts);
+    if (r.status === 401) {
+      console.error('🔴 Unauthorized (401). Token may be invalid or expired. Logging out...');
+      TOKEN = '';
+      USER = null;
+      localStorage.removeItem('sn_token');
+    }
     const data = await r.json();
     return data;
   } catch (e) { return { success: false, message: 'Network error. Is the server running?' }; }
@@ -2224,7 +2238,16 @@ function removeCoupon() {
   toast('Coupon removed', 'inf');
 }
 async function placeOrder() {
+  // Check authentication first
+  if (!TOKEN) {
+    toast('❌ Please login before placing an order', 'err');
+    openModal('authModal');
+    return;
+  }
+
   const pm = document.querySelector('input[name="pm"]:checked')?.value;
+  if (!pm) return toast('Select a payment method', 'err');
+  
   const addr = {
     name: document.getElementById('sName').value.trim(),
     phone: document.getElementById('sPhone').value.trim(),
@@ -2242,13 +2265,24 @@ async function placeOrder() {
   if (pm === 'cod') {
     const d = await req('/payment/cod', { json: { items, address: addr, notes } });
     if (d.success) { toast(`Order placed! ${d.orderId}`, 'ok'); CART = { items: [] }; renderCart(); goPage('orders'); }
-    else toast(d.message, 'err');
+    else toast(d.message || 'Failed to place COD order', 'err');
     return;
   }
 
-  // Razorpay
+  // Razorpay - Online Payment
+  console.log('📱 Initializing Razorpay payment with token:', TOKEN ? '✅ Present' : '❌ Missing');
+  console.log('📦 Items count:', items.length);
+  console.log('📍 Shipping address:', addr);
+  
   const od = await req('/payment/create-order', { json: { items, address: addr, notes } });
-  if (!od.success) return toast(od.message, 'err');
+  if (!od.success) {
+    const errMsg = od.message || 'Failed to create payment order';
+    console.error('❌ Create-order error:', errMsg);
+    console.error('📋 Full response:', od);
+    return toast('⚠️ ' + errMsg, 'err');
+  }
+
+  console.log('✅ Order created, opening Razorpay checkout...');
 
   const rzp = new Razorpay({
     key: od.razorpay.key,
@@ -2260,9 +2294,18 @@ async function placeOrder() {
     prefill: { name: addr.name, contact: addr.phone, email: USER?.email || '' },
     theme: { color: '#f05a28' },
     handler: async (resp) => {
+      console.log('✅ Payment completed by Razorpay, verifying...');
       const vd = await req('/payment/verify', { json: { razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature, dbOrderId: od.order.dbOrderId } });
-      if (vd.success) { toast(`Payment successful! Order: ${vd.orderId}`, 'ok'); CART = { items: [] }; renderCart(); goPage('orders'); }
-      else toast('Payment verification failed', 'err');
+      if (vd.success) { 
+        toast(`✅ Payment successful! Order: ${vd.orderId}`, 'ok'); 
+        CART = { items: [] }; 
+        renderCart(); 
+        goPage('orders'); 
+      }
+      else {
+        console.error('❌ Payment verification failed:', vd.message);
+        toast('Payment verification failed: ' + vd.message, 'err');
+      }
     },
     modal: { ondismiss: () => toast('Payment cancelled', 'inf') }
   });
